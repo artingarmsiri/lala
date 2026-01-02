@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Click Anywhere</title>
+
+<style>
+  * {
+    touch-action: manipulation;
+  }
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* Center text */
+  #hint {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(18px, 6vw, 48px);
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.85);
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 0.5s ease;
+  }
+
+  .gif {
+    position: absolute;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    width: clamp(90px, 20vw, 150px);
+  }
+</style>
+</head>
+
+<body>
+
+<div id="hint">CLICK ANYWHERE</div>
+
+<script>
+  const GIF_SRC = "gif.gif";
+  const SOUND_SRC = "sound.mp3";
+
+  let audioUnlocked = false;
+  let firstInteraction = true;
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    const a = new Audio();
+    a.play().catch(() => {});
+    audioUnlocked = true;
+  }
+
+  document.addEventListener("pointerdown", (e) => {
+    unlockAudio();
+
+    // Hide hint after first click
+    if (firstInteraction) {
+      document.getElementById("hint").style.opacity = "0";
+      firstInteraction = false;
+    }
+
+    const x = e.clientX;
+    const y = e.clientY;
+
+    const img = document.createElement("img");
+    img.src = GIF_SRC + "?r=" + Math.random();
+    img.className = "gif";
+    img.style.left = `${x}px`;
+    img.style.top = `${y}px`;
+
+    document.body.appendChild(img);
+
+    const audio = new Audio(SOUND_SRC);
+    audio.volume = 0.8;
+    audio.play().catch(() => {});
+  }, { passive: true });
+</script>
+
+</body>
+</html>
